@@ -62,4 +62,4 @@ async function jsonapiClient(endpoint,
 }
 
 // Exports.
-module.exports = { getToken, jsonapiClient }
+module.exports = { getToken, jsonapiClient, config }

@@ -74,5 +74,9 @@ async function addContact(contact) {
     )
 }
 
+function fetchApiConfig() {
+    return api.config
+}
+
 // Exports.
-module.exports = { addMessage, fetchContact }
+module.exports = { addMessage, fetchContact, fetchApiConfig }

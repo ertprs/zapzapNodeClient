@@ -6,6 +6,8 @@ const app = express()
 const bodyParser = require('body-parser')
 const port = 5000
 const actions = require('./actions')
+// Secret.
+const { id, secret } = actions.fetchApiConfig().client
 // WhatsApp Client.
 client.on('qr', qr => {
     qrcode.generate(qr, {
@@ -34,10 +36,16 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.post('/api/sendmessage', async (req, res) => {
-    const { number, message } = req.body.data
-    client.sendMessage(`${number}@c.us`, message)
+    const { id_, secret_ } = req.headers
+    // Secret.
+    const ok = id_ === id && secret_ === secret
+    if (ok) {
+        // Send Message.
+        const { number, message } = req.body.data
+        client.sendMessage(`${number}@c.us`, message)
+    }
 
-    return res.status(200).send()
+    return res.status(ok ? 200 : 403).send()
 })
 
 // Init.

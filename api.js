@@ -1,12 +1,12 @@
 const fetch = require("node-fetch");
 
 // Drupal oauth.
-const apiPath = 'whatahelpdesk/web'
-const domain = 'http://localhost/'
+const apiPath = ''
+const domain = 'http://mydevlocal.dev'
 
 const config = {
   client: {
-    id: 'c0d320b5-bfb4-46e4-a278-e758dd54bca3',
+    id: 'a37bc6fc-b492-466f-9f09-38c5aa3f21e5',
     secret: 'V3numEzVnyGYyE5'
   },
 

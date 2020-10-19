@@ -1,12 +1,13 @@
 const api = require('./api')
 
 async function addMessage(msg, contact) {
+    console.log(msg)
     // Check if contact exists.
     let contactEntity = await fetchContact(contact.number).then(
         async res => {
             // New contact.
             if (res.data[0] === undefined) {
-                const contactid = await addContact(contact)
+                const contactid = await addContact(contact, msg.to)
                 return contactid.data.id
             } // Existing contact.
             else {
@@ -47,7 +48,7 @@ async function fetchContact(number) {
 
 }
 
-async function addContact(contact) {
+async function addContact(contact, to) {
     return await api.jsonapiClient('/jsonapi/whatsapp_contact/whatsapp_contact',
         {
             options: {
@@ -58,6 +59,7 @@ async function addContact(contact) {
                         "attributes": {
                             "name": contact.name,
                             "number": contact.number,
+                            "to": to,
                             "picture": {
                                 uri: await contact.getProfilePicUrl(),
                                 alt: contact.name,
@@ -78,5 +80,9 @@ function fetchApiConfig() {
     return api.config
 }
 
+async function testToken() {
+    return await api.getToken()
+}
+
 // Exports.
-module.exports = { addMessage, fetchContact, fetchApiConfig }
+module.exports = { addMessage, fetchContact, fetchApiConfig, testToken }

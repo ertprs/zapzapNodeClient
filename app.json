@@ -1,4 +1,11 @@
 {
 "name": "Zaperton",
-"description": "yes"
+"description": "yes",
+"buildpacks": [
+    {
+      "url": "https://github.com/jontewks/puppeteer-heroku-buildpack"
+    }
+  ]
 }
+
+

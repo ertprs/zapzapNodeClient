@@ -1,7 +1,7 @@
 const fetch = require("node-fetch");
 const dotenv = require('dotenv').config()
 // Drupal oauth.
-const apiPath = process.env.APIPATH
+const apiPath = process.env.APIPATH !== undefined ? process.env.APIPATH : ''
 const domain = process.env.DOMAIN
 
 const config = {

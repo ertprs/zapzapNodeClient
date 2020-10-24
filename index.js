@@ -10,6 +10,7 @@ const bodyParser = require('body-parser')
 // Whatsapp ==================================
 // Session file.
 const SESSION_FILE_PATH = './session.json'
+const ppt = { puppeteer: { headless: true, args: ['--no-sandbox'] } }
 let sessionCfg;
 if (fs.existsSync(SESSION_FILE_PATH)) {
     sessionCfg = require(SESSION_FILE_PATH);
@@ -23,7 +24,7 @@ const StartClient = (session) => {
     return new Client(session)
 }
 // Start Client using session.
-let client = StartClient(sessionCfg === undefined ? {} : { session: sessionCfg })
+let client = StartClient(sessionCfg === undefined ? { ...ppt } : { ...ppt, session: sessionCfg })
 // Setup client.
 const SetupClient = () => {
     // WhatsApp Client.
@@ -46,7 +47,7 @@ const SetupClient = () => {
     client.on('auth_failure', async msg => {
         spinner.fail(msg)
         spinner.start("Starting New Client")
-        client = new Client()
+        client = new Client(...ppt)
         SetupClient()
     })
     // Disconnect.

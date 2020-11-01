@@ -44,7 +44,6 @@ async function addMessage(msg, contact) {
 
 async function fetchContact(number) {
     return await api.jsonapiClient(`/jsonapi/whatsapp_contact/whatsapp_contact?filter[number]=${number}`)
-
 }
 
 async function addContact(contact, to) {
@@ -75,6 +74,48 @@ async function addContact(contact, to) {
     )
 }
 
+async function fetchClient(name) {
+    return await api.jsonapiClient(`/jsonapi/whatsapp_client/whatsapp_client?filter[name]=${name}`)
+}
+
+async function editClient(id, attributes) {
+    return await api.jsonapiClient(`/jsonapi/whatsapp_client/whatsapp_client/${id}`,
+        {
+            options: {
+                method: 'PATCH',
+                body: JSON.stringify({
+                    "data": {
+                        "type": "whatsapp_client",
+                        "attributes": {
+                            ...attributes
+                        }
+                    }
+                }
+                )
+            }
+        }
+    )
+}
+
+async function addClient(name) {
+    return await api.jsonapiClient('/jsonapi/whatsapp_client/whatsapp_client',
+        {
+            options: {
+                method: 'POST',
+                body: JSON.stringify({
+                    "data": {
+                        "type": "whatsapp_client",
+                        "attributes": {
+                            "name": name
+                        }
+                    }
+                }
+                )
+            }
+        }
+    )
+}
+
 function fetchApiConfig() {
     return api.config
 }
@@ -83,5 +124,4 @@ async function testToken() {
     return await api.getToken()
 }
 
-// Exports.
-module.exports = { addMessage, fetchContact, fetchApiConfig, testToken }
+module.exports = { addMessage, fetchContact, fetchApiConfig, testToken, fetchClient, addClient }

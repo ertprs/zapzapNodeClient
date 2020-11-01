@@ -1,39 +1,43 @@
 const qrcode = require('qrcode-terminal')
 const { Client } = require('whatsapp-web.js')
-const fs = require('fs')
 const actions = require('./actions')
 const ora = require('ora')
 const spinner = ora()
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-// Whatsapp ==================================
-// Session file.
-const SESSION_FILE_PATH = './session.json'
 const ppt = { puppeteer: { headless: true, args: ['--no-sandbox'] } }
-let sessionCfg;
-if (fs.existsSync(SESSION_FILE_PATH)) {
-    sessionCfg = require(SESSION_FILE_PATH);
-}
+let newclient
+// Whatsapp ==================================
 // Start Client.
-const StartClient = (session) => {
-    if (sessionCfg !== undefined) {
+const StartClient = async () => {
+    // Fetch existing client.
+    const existingclient = await actions.fetchClient(process.env.NAME)
+    const exists = existingclient.data[0] !== undefined
+    // Verbose for positive.
+    if (exists) {
         spinner.start('session exists, trying to authenticate...')
+    } else {
+        // Create new client.
+        newclient = await actions.addClient(process.env.NAME)
     }
-    // Client.
-    return new Client(session)
+
+    return new Client(exists ? { ...ppt, session: existingclient.data[0].attributes.session } : { ...ppt })
 }
 // Start Client using session.
-let client = StartClient(sessionCfg === undefined ? { ...ppt } : { ...ppt, session: sessionCfg })
+let client
 // Setup client.
-const SetupClient = () => {
+const SetupClient = async () => {
+    client = await StartClient()
     // WhatsApp Client.
     client.on('qr', async qr => {
         const token = await actions.testToken()
         if (token && token.token_type) {
+            console.log("HUE", newclient)
+            actions.editClient(newclient.data.id, { qr: qr })
             qrcode.generate(qr, {
                 small: true
-            });
+            })
         } else {
             spinner.fail("Couldn't retrieve token, check API credentials.")
         }
@@ -41,7 +45,7 @@ const SetupClient = () => {
     // Auth.
     client.on('authenticated', async session => {
         spinner.succeed('Authenticated :)')
-        fs.writeFileSync('./session.json', JSON.stringify(session))
+        actions.editClient(newclient.data.id, { session: session })
     })
     // Auth Failure.
     client.on('auth_failure', async msg => {
